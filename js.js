@@ -19,6 +19,7 @@ let tailLength = 1;
 
 let score = 0;
 let level = 1;
+let highScore = [];
 
 let xVel = 0;
 let yVel = 0;
@@ -27,8 +28,12 @@ let appleX = 5;
 let appleY = 5;
 function drawGame(){
     changeSnakePosition();
+
+
     let result = isGameOver();
     if(result){
+        setHighScore();
+        getScore();
         return;
     }
 
@@ -41,7 +46,41 @@ function drawGame(){
     drawApple();
     setLevel();
 
+
     setTimeout(drawGame, 1000 / speed);
+}
+
+function getScore(){
+    let  score = document.getElementById("highScore");
+    let result = '';
+    highScore.sort();
+    highScore.reverse();
+    for (const i in highScore) {
+        result += `${highScore[i]}<br>`
+    }
+    score.innerHTML = result;
+}
+
+function setHighScore(){
+    highScore.push(score);
+}
+function reset(){
+    speed = 5;
+    headY = 10;
+    headX = 10;
+    snakePart = [];
+    tailLength = 1;
+
+    score = 0;
+    level = 1;
+
+    xVel = 0;
+    yVel = 0;
+
+    appleX = 5;
+    appleY = 5;
+    getScore();
+    drawGame();
 }
 
 function setLevel(){
@@ -70,7 +109,7 @@ function isGameOver(){
     else if (headY < 0){
         gameOver = true;
     }
-    else if (headY === tileCount){
+    else if (headY == tileCount){
         gameOver = true;
     }
     for (let i = 0; i < snakePart.length; i++) {
@@ -125,7 +164,7 @@ function drawSnake(){
         snakePart.shift();
     }
 
-    // ctx.fillStyle = 'orange';
+    ctx.fillStyle = 'orange';
     ctx.fillRect(headX * tileCount, headY * tileCount, tileSize, tileSize);
 
 }
@@ -148,6 +187,17 @@ function checkAppleCollision(){
         score += 10;
         sound.play();
     }
+    for (let i = 0; i < snakePart.length; i++) {
+        let part = snakePart[i];
+        if(part.x === appleX && part.y === appleY){
+            appleY = Math.floor(Math.random() * tileCount);
+            appleX = Math.floor(Math.random() * tileCount);
+            tailLength++;
+            score += 10;
+            sound.play();
+            break;
+        }
+    }
 }
 
 document.body.addEventListener('keydown',keyDown);
@@ -160,27 +210,54 @@ function keyDown(event){
              yVel = -1;
              xVel = 0;
              break;
-        case 39:
+        case 39 || 68:
             if(xVel === -1){
                 break;
             }
             yVel = 0;
             xVel = 1;
             break;
-        case 37:
+        case 37 || 65:
             if(xVel === 1){
                 break;
             }
             yVel = 0;
             xVel = -1;
             break;
-        case 40:
+        case 40 || 83:
             if(yVel === -1){
                 break;
             }
             yVel = 1;
             xVel = 0;
+            break
+        case  87:
+            if(yVel === 1){
+                break;
+            }
+            yVel = -1;
+            xVel = 0;
             break;
+        case 68:
+            if(xVel === -1){
+                break;
+            }
+            yVel = 0;
+            xVel = 1;
+            break;
+        case 65:
+            if(xVel === 1){
+                break;
+            }
+            yVel = 0;
+            xVel = -1;
+            break;
+        case 83:
+            if(yVel === -1){
+                break;
+            }
+            yVel = 1;
+            xVel = 0;
+            break
     }
     }
-drawGame();
